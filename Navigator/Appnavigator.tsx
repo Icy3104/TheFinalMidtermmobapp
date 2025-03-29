@@ -2,13 +2,18 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import Homescreen from '../Screens/Homescreen';
 import Savejobscreen from '../Screens/Savejobscreen';
 import Applicationformscreen from '../Screens/Applicationformscreen';
-import { createStackNavigator } from '@react-navigation/stack';
+
+export type RootStackParamList = {
+    Main: undefined;
+    ApplicationForm: { job: any }; // Ensure job data is passed
+};
 
 const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
 
 const MainTabs = () => (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
