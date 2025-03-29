@@ -1,6 +1,8 @@
-// Screens/Homescreen.tsx
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { 
+    View, Text, TextInput, FlatList, TouchableOpacity, Image, StyleSheet 
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useJobContext } from '../Context/Jobcontext';
 
 const Homescreen: React.FC = () => {
@@ -19,61 +21,69 @@ const Homescreen: React.FC = () => {
     );
 
     return (
-        <View style={styles.container}>
-            <TextInput
-                style={styles.searchBar}
-                placeholder="Search jobs..."
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-            />
-            <FlatList
-                data={filteredJobs}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    <View style={styles.jobCard}>
-                        <Image source={{ uri: item.companyLogo }} style={styles.logo} />
-                        <View style={styles.jobInfo}>
-                            <Text style={styles.title}>{item.title}</Text>
-                            <Text style={styles.company}>{item.companyName}</Text>
-                            <Text style={styles.workModel}>{item.workModel}</Text>
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.container}>
+                <TextInput
+                    style={styles.searchBar}
+                    placeholder="Search jobs..."
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                />
+                <FlatList
+                    data={filteredJobs}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => (
+                        <View style={styles.jobCard}>
+                            <Image source={{ uri: item.companyLogo }} style={styles.logo} />
+                            <View style={styles.jobInfo}>
+                                <Text style={styles.title}>{item.title}</Text>
+                                <Text style={styles.company}>{item.companyName}</Text>
+                                <Text style={styles.workModel}>{item.workModel}</Text>
+                            </View>
+                            <View style={styles.buttons}>
+                                <TouchableOpacity
+                                    style={styles.saveButton}
+                                    onPress={() => saveJob(item)}
+                                >
+                                    <Text style={styles.buttonText}>
+                                        {savedJobs.some((saved) => saved.id === item.id) ? 'Saved' : 'Save Job'}
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.applyButton}
+                                    onPress={() => console.log('Navigate to application form')}
+                                >
+                                    <Text style={styles.buttonText}>Apply</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                        <View style={styles.buttons}>
-                            <TouchableOpacity
-                                style={styles.saveButton}
-                                onPress={() => saveJob(item)}
-                            >
-                                <Text style={styles.buttonText}>
-                                    {savedJobs.some((saved) => saved.id === item.id) ? 'Saved' : 'Save Job'}
-                                </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={styles.applyButton}
-                                onPress={() => console.log('Navigate to application form')}
-                            >
-                                <Text style={styles.buttonText}>Apply</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                )}
-            />
-        </View>
+                    )}
+                    contentContainerStyle={styles.listContainer}
+                />
+            </View>
+        </SafeAreaView>
     );
 };
 
 // Styles
 const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
     container: {
         flex: 1,
-        padding: 10,
-        backgroundColor: '#fff',
+        paddingHorizontal: 10,
     },
     searchBar: {
         height: 40,
         borderColor: '#ccc',
         borderWidth: 1,
-        borderRadius: 5,
+        borderRadius: 8,
         paddingHorizontal: 10,
+        marginTop: 10, // Prevents overlap with the status bar
         marginBottom: 10,
+        backgroundColor: '#fff',
     },
     jobCard: {
         flexDirection: 'row',
@@ -123,6 +133,9 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#fff',
         fontWeight: 'bold',
+    },
+    listContainer: {
+        paddingBottom: 20,
     },
 });
 
