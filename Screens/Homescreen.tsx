@@ -3,12 +3,13 @@ import {
     View, Text, TextInput, FlatList, TouchableOpacity, Image, StyleSheet 
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 import { useJobContext } from '../Context/Jobcontext';
+import { useTheme } from '../Context/Themecontext';
+import { Switch } from 'react-native';
 
 const Homescreen: React.FC = () => {
     const { jobs, savedJobs, fetchJobs, saveJob } = useJobContext();
-    const navigation = useNavigation();
+    const { isDarkMode, toggleTheme } = useTheme();
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
@@ -23,24 +24,34 @@ const Homescreen: React.FC = () => {
     );
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: isDarkMode ? '#000' : '#fff' }]}>
             <View style={styles.container}>
+                {/* Header */}
+                <View style={[styles.header, { backgroundColor: isDarkMode ? '#222' : '#fff' }]}>
+                    <Text style={[styles.headerText, { color: isDarkMode ? '#fff' : '#000' }]}>
+                        Midterms by ITCO C3A
+                    </Text>
+                    <Switch value={isDarkMode} onValueChange={toggleTheme} />
+                </View>
+
                 <TextInput
-                    style={styles.searchBar}
+                    style={[styles.searchBar, { backgroundColor: isDarkMode ? '#333' : '#fff', color: isDarkMode ? '#fff' : '#000' }]}
                     placeholder="Search jobs..."
+                    placeholderTextColor={isDarkMode ? '#bbb' : '#777'}
                     value={searchQuery}
                     onChangeText={setSearchQuery}
                 />
+
                 <FlatList
                     data={filteredJobs}
                     keyExtractor={(item) => item.id}
                     renderItem={({ item }) => (
-                        <View style={styles.jobCard}>
+                        <View style={[styles.jobCard, { backgroundColor: isDarkMode ? '#222' : '#f9f9f9' }]}>
                             <Image source={{ uri: item.companyLogo }} style={styles.logo} />
                             <View style={styles.jobInfo}>
-                                <Text style={styles.title}>{item.title}</Text>
-                                <Text style={styles.company}>{item.companyName}</Text>
-                                <Text style={styles.workModel}>{item.workModel}</Text>
+                                <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#000' }]}>{item.title}</Text>
+                                <Text style={[styles.company, { color: isDarkMode ? '#ccc' : '#000' }]}>{item.companyName}</Text>
+                                <Text style={[styles.workModel, { color: isDarkMode ? '#ccc' : '#000' }]}>{item.workModel}</Text>
                             </View>
                             <View style={styles.buttons}>
                                 <TouchableOpacity
@@ -53,7 +64,7 @@ const Homescreen: React.FC = () => {
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={styles.applyButton}
-                                    onPress={() => navigation.navigate('ApplicationForm', { job: item })}
+                                    onPress={() => console.log('Navigate to application form')}
                                 >
                                     <Text style={styles.buttonText}>Apply</Text>
                                 </TouchableOpacity>
@@ -71,11 +82,25 @@ const Homescreen: React.FC = () => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#fff',
     },
     container: {
         flex: 1,
         paddingHorizontal: 10,
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 8,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        marginTop: 10,
+    },
+    headerText: {
+        fontSize: 16,
+        fontWeight: 'bold',
     },
     searchBar: {
         height: 40,
@@ -83,15 +108,13 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 8,
         paddingHorizontal: 10,
-        marginTop: 10,
+        marginTop: 8,
         marginBottom: 10,
-        backgroundColor: '#fff',
     },
     jobCard: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
-        backgroundColor: '#f9f9f9',
         marginBottom: 10,
         borderRadius: 8,
     },
@@ -105,18 +128,14 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     title: {
-        fontSize: 22, // Increased for better visibility
+        fontSize: 22,
         fontWeight: 'bold',
-        color: '#000', // Ensures job title is black
     },
     company: {
-        fontSize: 16, // Clearer and sharper
-        fontWeight: '500',
-        color: '#000', // Black color for better readability
+        fontSize: 14,
     },
     workModel: {
-        fontSize: 14,
-        color: '#000', // Black text for better visibility
+        fontSize: 12,
     },
     buttons: {
         flexDirection: 'column',
