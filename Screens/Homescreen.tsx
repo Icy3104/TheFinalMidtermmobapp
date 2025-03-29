@@ -3,10 +3,12 @@ import {
     View, Text, TextInput, FlatList, TouchableOpacity, Image, StyleSheet 
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { useJobContext } from '../Context/Jobcontext';
 
 const Homescreen: React.FC = () => {
     const { jobs, savedJobs, fetchJobs, saveJob } = useJobContext();
+    const navigation = useNavigation();
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
@@ -51,7 +53,7 @@ const Homescreen: React.FC = () => {
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={styles.applyButton}
-                                    onPress={() => console.log('Navigate to application form')}
+                                    onPress={() => navigation.navigate('ApplicationForm', { job: item })}
                                 >
                                     <Text style={styles.buttonText}>Apply</Text>
                                 </TouchableOpacity>
@@ -81,7 +83,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 8,
         paddingHorizontal: 10,
-        marginTop: 10, // Prevents overlap with the status bar
+        marginTop: 10,
         marginBottom: 10,
         backgroundColor: '#fff',
     },
@@ -103,16 +105,18 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     title: {
-        fontSize: 16,
+        fontSize: 22, // Increased for better visibility
         fontWeight: 'bold',
+        color: '#000', // Ensures job title is black
     },
     company: {
-        fontSize: 14,
-        color: '#555',
+        fontSize: 16, // Clearer and sharper
+        fontWeight: '500',
+        color: '#000', // Black color for better readability
     },
     workModel: {
-        fontSize: 12,
-        color: '#777',
+        fontSize: 14,
+        color: '#000', // Black text for better visibility
     },
     buttons: {
         flexDirection: 'column',
