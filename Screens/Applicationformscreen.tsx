@@ -136,4 +136,4 @@ const styles = StyleSheet.create({
     buttonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
 });
 
-export default Applicationformscreen
+export default Applicationformscreen;
