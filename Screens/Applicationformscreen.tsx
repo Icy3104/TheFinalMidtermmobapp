@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { 
     View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Keyboard, TouchableWithoutFeedback 
 } from 'react-native';
@@ -6,37 +6,52 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../Navigator/Appnavigator';
 import { useTheme } from '../Context/Themecontext';
+import { JobContext } from '../Context/Jobcontext'; // Import the context managing saved jobs
 
 const Applicationformscreen: React.FC = () => {
     const route = useRoute();
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const { isDarkMode } = useTheme();
+    const { savedJobs, setSavedJobs } = useContext(JobContext); // Get saved jobs and setter function
 
-    // Ensure job data exists to prevent crashes
     const job = (route.params as { job?: any })?.job;
+    const fromSavedJobs = (route.params as { fromSavedJobs?: boolean })?.fromSavedJobs || false;
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [contact, setContact] = useState('');
     const [reason, setReason] = useState('');
 
-    // Function to handle form submission
     const handleSubmit = () => {
         if (!name || !email || !contact || !reason) {
             Alert.alert('Error', 'Please fill in all fields.');
             return;
         }
 
-        // Show feedback & navigate back
-        Alert.alert('Success', 'Your application has been submitted.', [
-            { text: 'OK', onPress: () => navigation.goBack() },
-        ]);
+        // Remove the job from saved jobs if applying from Saved Jobs
+        if (fromSavedJobs && job) {
+            setSavedJobs(savedJobs.filter(savedJob => savedJob.id !== job.id));
+        }
 
-        // Clear form fields
+        // Clear form fields first
         setName('');
         setEmail('');
         setContact('');
         setReason('');
+
+        // Show success alert with "OK" button that redirects properly
+        Alert.alert('Success', 'Your application has been submitted.', [
+            { 
+                text: 'OK', 
+                onPress: () => {
+                    if (fromSavedJobs) {
+                        navigation.navigate('HomeScreen'); // Redirect to Job Finder Screen
+                    } else {
+                        navigation.goBack(); // Go back to the previous screen
+                    }
+                }
+            },
+        ]);
     };
 
     return (
@@ -44,7 +59,6 @@ const Applicationformscreen: React.FC = () => {
             <ScrollView contentContainerStyle={[styles.container, { backgroundColor: isDarkMode ? '#000' : '#fff' }]}>
                 <Text style={[styles.heading, { color: isDarkMode ? '#fff' : '#000' }]}>Job Application</Text>
 
-                {/* Job Title (Read-only) */}
                 {job ? (
                     <>
                         <Text style={[styles.label, { color: isDarkMode ? '#bbb' : '#000' }]}>Applying for:</Text>
@@ -56,7 +70,6 @@ const Applicationformscreen: React.FC = () => {
                     </Text>
                 )}
 
-                {/* Name Field */}
                 <Text style={[styles.label, { color: isDarkMode ? '#bbb' : '#000' }]}>Full Name</Text>
                 <TextInput 
                     style={[styles.input, { backgroundColor: isDarkMode ? '#222' : '#fff', color: isDarkMode ? '#fff' : '#000' }]} 
@@ -66,7 +79,6 @@ const Applicationformscreen: React.FC = () => {
                     onChangeText={setName}
                 />
 
-                {/* Email Field */}
                 <Text style={[styles.label, { color: isDarkMode ? '#bbb' : '#000' }]}>Email</Text>
                 <TextInput 
                     style={[styles.input, { backgroundColor: isDarkMode ? '#222' : '#fff', color: isDarkMode ? '#fff' : '#000' }]} 
@@ -77,7 +89,6 @@ const Applicationformscreen: React.FC = () => {
                     onChangeText={setEmail}
                 />
 
-                {/* Contact Number Field */}
                 <Text style={[styles.label, { color: isDarkMode ? '#bbb' : '#000' }]}>Contact Number</Text>
                 <TextInput 
                     style={[styles.input, { backgroundColor: isDarkMode ? '#222' : '#fff', color: isDarkMode ? '#fff' : '#000' }]} 
@@ -88,7 +99,6 @@ const Applicationformscreen: React.FC = () => {
                     onChangeText={setContact}
                 />
 
-                {/* Why Should We Hire You? Field */}
                 <Text style={[styles.label, { color: isDarkMode ? '#bbb' : '#000' }]}>Why should we hire you?</Text>
                 <TextInput 
                     style={[styles.input, styles.textArea, { backgroundColor: isDarkMode ? '#222' : '#fff', color: isDarkMode ? '#fff' : '#000' }]} 
@@ -100,7 +110,6 @@ const Applicationformscreen: React.FC = () => {
                     onChangeText={setReason}
                 />
 
-                {/* Submit Button */}
                 <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
                     <Text style={styles.buttonText}>Submit</Text>
                 </TouchableOpacity>
