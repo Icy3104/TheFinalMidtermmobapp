@@ -1,34 +1,43 @@
-// Screens/Savejobscreen.tsx
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useJobContext } from '../Context/Jobcontext';
+import { useTheme } from '../Context/Themecontext';
 
 const Savejobscreen: React.FC = () => {
     const { savedJobs, removeJob } = useJobContext();
+    const { isDarkMode } = useTheme();
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.heading}>Saved Jobs</Text>
+        <View style={[styles.container, { backgroundColor: isDarkMode ? '#000' : '#fff' }]}>
+            <Text style={[styles.heading, { color: isDarkMode ? '#fff' : '#000' }]}>Saved Jobs</Text>
             {savedJobs.length === 0 ? (
-                <Text style={styles.noJobsText}>No saved jobs yet.</Text>
+                <Text style={[styles.noJobsText, { color: isDarkMode ? '#bbb' : '#777' }]}>No saved jobs yet.</Text>
             ) : (
                 <FlatList
                     data={savedJobs}
                     keyExtractor={(item) => item.id}
                     renderItem={({ item }) => (
-                        <View style={styles.jobCard}>
+                        <View style={[styles.jobCard, { backgroundColor: isDarkMode ? '#222' : '#f9f9f9' }]}>
                             <Image source={{ uri: item.companyLogo }} style={styles.logo} />
                             <View style={styles.jobInfo}>
-                                <Text style={styles.title}>{item.title}</Text>
-                                <Text style={styles.company}>{item.companyName}</Text>
-                                <Text style={styles.workModel}>{item.workModel}</Text>
+                                <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#000' }]}>{item.title}</Text>
+                                <Text style={[styles.company, { color: isDarkMode ? '#ccc' : '#555' }]}>{item.companyName}</Text>
+                                <Text style={[styles.workModel, { color: isDarkMode ? '#bbb' : '#777' }]}>{item.workModel}</Text>
                             </View>
-                            <TouchableOpacity 
-                                style={styles.removeButton} 
-                                onPress={() => removeJob(item.id)}
-                            >
-                                <Text style={styles.buttonText}>Remove</Text>
-                            </TouchableOpacity>
+                            <View style={styles.buttonsContainer}>
+                                <TouchableOpacity 
+                                    style={styles.removeButton} 
+                                    onPress={() => removeJob(item.id)}
+                                >
+                                    <Text style={styles.buttonText}>Remove</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity 
+                                    style={styles.applyButton} 
+                                    onPress={() => console.log('Navigate to application form')}
+                                >
+                                    <Text style={styles.buttonText}>Apply</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     )}
                 />
@@ -42,10 +51,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 10,
-        backgroundColor: '#fff',
     },
     heading: {
-        fontSize: 20,
+        fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 10,
     },
@@ -53,41 +61,47 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textAlign: 'center',
         marginTop: 20,
-        color: '#777',
     },
     jobCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 15,
-        backgroundColor: '#f9f9f9',
-        marginBottom: 10,
-        borderRadius: 8,
+        padding: 20,
+        marginBottom: 12,
+        borderRadius: 10,
     },
     logo: {
-        width: 50,
-        height: 50,
-        marginRight: 10,
+        width: 60,
+        height: 60,
+        marginRight: 12,
         borderRadius: 5,
     },
     jobInfo: {
         flex: 1,
     },
     title: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
     },
     company: {
-        fontSize: 14,
-        color: '#555',
+        fontSize: 16,
     },
     workModel: {
-        fontSize: 12,
-        color: '#777',
+        fontSize: 14,
+    },
+    buttonsContainer: {
+        flexDirection: 'column',
     },
     removeButton: {
         backgroundColor: '#dc3545',
-        paddingVertical: 5,
-        paddingHorizontal: 10,
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderRadius: 5,
+        marginBottom: 5,
+    },
+    applyButton: {
+        backgroundColor: '#28a745',
+        paddingVertical: 6,
+        paddingHorizontal: 12,
         borderRadius: 5,
     },
     buttonText: {

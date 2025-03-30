@@ -1,4 +1,3 @@
-// Navigator/Appnavigator.tsx
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
@@ -6,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Homescreen from '../Screens/Homescreen';
 import Savejobscreen from '../Screens/Savejobscreen';
 import Applicationformscreen from '../Screens/Applicationformscreen';
+import { Ionicons } from '@expo/vector-icons'; // Import Ionicons for icons
 
 export type RootStackParamList = {
     Main: undefined;
@@ -16,7 +16,25 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator<RootStackParamList>();
 
 const MainTabs = () => (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator
+        screenOptions={({ route }) => ({
+            headerShown: false,
+            tabBarIcon: ({ color, size }) => {
+                let iconName;
+
+                if (route.name === 'Home') {
+                    iconName = 'home-outline';
+                } else if (route.name === 'Saved Jobs') {
+                    iconName = 'bookmark-outline'; // Changed icon
+                }
+
+                return <Ionicons name={iconName} size={size} color={color} />;
+            },
+            tabBarActiveTintColor: '#007bff', // Highlight color
+            tabBarInactiveTintColor: 'gray',
+            tabBarLabelStyle: { fontSize: 14, fontWeight: 'bold' }, // Increased font size
+        })}
+    >
         <Tab.Screen name="Home" component={Homescreen} />
         <Tab.Screen name="Saved Jobs" component={Savejobscreen} />
     </Tab.Navigator>
