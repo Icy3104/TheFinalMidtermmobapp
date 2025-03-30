@@ -9,6 +9,7 @@ const Savejobscreen: React.FC = () => {
 
     return (
         <View style={[styles.container, { backgroundColor: isDarkMode ? '#000' : '#fff' }]}>
+            {/* ✅ Centered the "Saved Jobs" text */}
             <Text style={[styles.heading, { color: isDarkMode ? '#fff' : '#000' }]}>Saved Jobs</Text>
             {savedJobs.length === 0 ? (
                 <Text style={[styles.noJobsText, { color: isDarkMode ? '#bbb' : '#777' }]}>No saved jobs yet.</Text>
@@ -56,6 +57,7 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 10,
+        textAlign: 'center', // ✅ This centers the text
     },
     noJobsText: {
         fontSize: 16,

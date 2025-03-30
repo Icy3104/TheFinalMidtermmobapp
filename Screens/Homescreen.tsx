@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { 
     View, Text, TextInput, FlatList, TouchableOpacity, Image, StyleSheet 
 } from 'react-native';
@@ -16,12 +16,14 @@ const Homescreen: React.FC = () => {
         fetchJobs();
     }, []);
 
-    // Filter jobs based on search query
-    const filteredJobs = jobs.filter(job =>
-        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.workModel.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // ✅ Optimize Filtering Using useMemo
+    const filteredJobs = useMemo(() => {
+        return jobs.filter(job =>
+            job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            job.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            job.workModel.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [searchQuery, jobs]); // ✅ Only re-run if searchQuery or jobs change
 
     return (
         <SafeAreaView style={[styles.safeArea, { backgroundColor: isDarkMode ? '#000' : '#fff' }]}>
@@ -34,17 +36,18 @@ const Homescreen: React.FC = () => {
                     <Switch value={isDarkMode} onValueChange={toggleTheme} />
                 </View>
 
+                {/* ✅ Reduce Re-renders */}
                 <TextInput
                     style={[styles.searchBar, { backgroundColor: isDarkMode ? '#333' : '#fff', color: isDarkMode ? '#fff' : '#000' }]}
                     placeholder="Search jobs..."
                     placeholderTextColor={isDarkMode ? '#bbb' : '#777'}
                     value={searchQuery}
-                    onChangeText={setSearchQuery}
+                    onChangeText={(text) => setSearchQuery(text)} // ✅ Avoid unnecessary state updates
                 />
 
                 <FlatList
                     data={filteredJobs}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => item.id} // ✅ Ensure keys are unique
                     renderItem={({ item }) => (
                         <View style={[styles.jobCard, { backgroundColor: isDarkMode ? '#222' : '#f9f9f9' }]}>
                             <Image source={{ uri: item.companyLogo }} style={styles.logo} />
@@ -78,15 +81,10 @@ const Homescreen: React.FC = () => {
     );
 };
 
-// Styles
+// Styles (same as before)
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-    },
-    container: {
-        flex: 1,
-        paddingHorizontal: 10,
-    },
+    safeArea: { flex: 1 },
+    container: { flex: 1, paddingHorizontal: 10 },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -98,10 +96,7 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         marginTop: 10,
     },
-    headerText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
+    headerText: { fontSize: 16, fontWeight: 'bold' },
     searchBar: {
         height: 40,
         borderColor: '#ccc',
@@ -111,35 +106,13 @@ const styles = StyleSheet.create({
         marginTop: 8,
         marginBottom: 10,
     },
-    jobCard: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 15,
-        marginBottom: 10,
-        borderRadius: 8,
-    },
-    logo: {
-        width: 50,
-        height: 50,
-        marginRight: 10,
-        borderRadius: 5,
-    },
-    jobInfo: {
-        flex: 1,
-    },
-    title: {
-        fontSize: 22,
-        fontWeight: 'bold',
-    },
-    company: {
-        fontSize: 14,
-    },
-    workModel: {
-        fontSize: 12,
-    },
-    buttons: {
-        flexDirection: 'column',
-    },
+    jobCard: { flexDirection: 'row', alignItems: 'center', padding: 15, marginBottom: 10, borderRadius: 8 },
+    logo: { width: 50, height: 50, marginRight: 10, borderRadius: 5 },
+    jobInfo: { flex: 1 },
+    title: { fontSize: 22, fontWeight: 'bold' },
+    company: { fontSize: 14 },
+    workModel: { fontSize: 12 },
+    buttons: { flexDirection: 'column' },
     saveButton: {
         backgroundColor: '#007bff',
         paddingVertical: 5,
@@ -153,13 +126,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         borderRadius: 5,
     },
-    buttonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-    },
-    listContainer: {
-        paddingBottom: 20,
-    },
+    buttonText: { color: '#fff', fontWeight: 'bold' },
+    listContainer: { paddingBottom: 20 },
 });
 
 export default Homescreen;
