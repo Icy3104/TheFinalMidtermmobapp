@@ -6,13 +6,13 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../Navigator/Appnavigator';
 import { useTheme } from '../Context/Themecontext';
-import { JobContext } from '../Context/Jobcontext'; // Import the context managing saved jobs
+import { Jobcontext } from '../Context/Jobcontext'; // Import the context managing saved jobs
 
 const Applicationformscreen: React.FC = () => {
     const route = useRoute();
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const { isDarkMode } = useTheme();
-    const { savedJobs, setSavedJobs } = useContext(JobContext); // Get saved jobs and setter function
+    const { savedJobs, setSavedJobs } = useContext(Jobcontext); // Get saved jobs and setter function
 
     const job = (route.params as { job?: any })?.job;
     const fromSavedJobs = (route.params as { fromSavedJobs?: boolean })?.fromSavedJobs || false;

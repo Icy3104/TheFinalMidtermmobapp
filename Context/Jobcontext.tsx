@@ -1,5 +1,5 @@
 // Context/Jobcontext.tsx
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
 import uuid from 'react-native-uuid';
 
@@ -68,8 +68,9 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     );
 };
 
-export const useJobContext = () => {
-    const context = React.useContext(JobContext);
+// ✅ FIXED: Corrected the incorrect `Jobcontext` reference  
+export const useJobcontext = () => {
+    const context = useContext(JobContext); // ✅ Correct reference  
     if (!context) {
         throw new Error('useJobContext must be used within a JobProvider');
     }

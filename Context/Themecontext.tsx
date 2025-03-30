@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Appearance } from 'react-native';
 
 // Define the context type
@@ -10,8 +10,16 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const colorScheme = Appearance.getColorScheme();
-    const [isDarkMode, setIsDarkMode] = useState(colorScheme === 'dark');
+    const [isDarkMode, setIsDarkMode] = useState(Appearance.getColorScheme() === 'dark');
+
+    // ✅ Listen for system theme changes (Fixes `_currentValue2` issues)
+    useEffect(() => {
+        const subscription = Appearance.addChangeListener(({ colorScheme }) => {
+            setIsDarkMode(colorScheme === 'dark');
+        });
+
+        return () => subscription.remove();
+    }, []);
 
     const toggleTheme = () => {
         setIsDarkMode((prevMode) => !prevMode);
