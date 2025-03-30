@@ -1,42 +1,67 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { 
+    View, Text, FlatList, TouchableOpacity, Image, StyleSheet 
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../Navigator/Appnavigator';
 import { useJobContext } from '../Context/Jobcontext';
 import { useTheme } from '../Context/Themecontext';
 
 const Savejobscreen: React.FC = () => {
-    const { savedJobs, removeJob } = useJobContext();
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+    const { savedJobs, removeJob } = useJobContext(); // Added removeJob function
     const { isDarkMode } = useTheme();
 
     return (
         <View style={[styles.container, { backgroundColor: isDarkMode ? '#000' : '#fff' }]}>
-            {/* ✅ Centered the "Saved Jobs" text */}
             <Text style={[styles.heading, { color: isDarkMode ? '#fff' : '#000' }]}>Saved Jobs</Text>
+
+            {/* Show message if no saved jobs */}
             {savedJobs.length === 0 ? (
-                <Text style={[styles.noJobsText, { color: isDarkMode ? '#bbb' : '#777' }]}>No saved jobs yet.</Text>
+                <Text style={[styles.noJobsText, { color: isDarkMode ? '#bbb' : '#777' }]}>
+                    No saved jobs yet.
+                </Text>
             ) : (
                 <FlatList
                     data={savedJobs}
                     keyExtractor={(item) => item.id}
                     renderItem={({ item }) => (
                         <View style={[styles.jobCard, { backgroundColor: isDarkMode ? '#222' : '#f9f9f9' }]}>
-                            <Image source={{ uri: item.companyLogo }} style={styles.logo} />
+                            
+                            {/* Company Logo (Handles cases where the logo is missing) */}
+                            {item.companyLogo ? (
+                                <Image source={{ uri: item.companyLogo }} style={styles.logo} />
+                            ) : (
+                                <View style={[styles.logoPlaceholder, { backgroundColor: isDarkMode ? '#444' : '#ccc' }]}>
+                                    <Text style={{ color: isDarkMode ? '#bbb' : '#555' }}>No Logo</Text>
+                                </View>
+                            )}
+
+                            {/* Job Info */}
                             <View style={styles.jobInfo}>
-                                <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#000' }]}>{item.title}</Text>
-                                <Text style={[styles.company, { color: isDarkMode ? '#ccc' : '#555' }]}>{item.companyName}</Text>
-                                <Text style={[styles.workModel, { color: isDarkMode ? '#bbb' : '#777' }]}>{item.workModel}</Text>
+                                <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#000' }]}>
+                                    {item.title}
+                                </Text>
+                                <Text style={[styles.company, { color: isDarkMode ? '#ccc' : '#000' }]}>
+                                    {item.companyName}
+                                </Text>
                             </View>
-                            <View style={styles.buttonsContainer}>
+
+                            {/* Buttons (Apply & Remove) */}
+                            <View style={styles.buttons}>
+                                <TouchableOpacity 
+                                    style={styles.applyButton} 
+                                    onPress={() => navigation.navigate('ApplicationForm', { job: item })}
+                                >
+                                    <Text style={styles.buttonText}>Apply</Text>
+                                </TouchableOpacity>
+
                                 <TouchableOpacity 
                                     style={styles.removeButton} 
                                     onPress={() => removeJob(item.id)}
                                 >
                                     <Text style={styles.buttonText}>Remove</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity 
-                                    style={styles.applyButton} 
-                                    onPress={() => console.log('Navigate to application form')}
-                                >
-                                    <Text style={styles.buttonText}>Apply</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -49,67 +74,22 @@ const Savejobscreen: React.FC = () => {
 
 // Styles
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 10,
+    container: { flex: 1, padding: 10 },
+    heading: { fontSize: 22, fontWeight: 'bold', marginBottom: 10, textAlign: 'center' },
+    noJobsText: { fontSize: 16, textAlign: 'center', marginTop: 20 },
+    jobCard: { 
+        flexDirection: 'row', alignItems: 'center', padding: 15, 
+        marginBottom: 10, borderRadius: 8 
     },
-    heading: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        marginBottom: 10,
-        textAlign: 'center', // ✅ This centers the text
-    },
-    noJobsText: {
-        fontSize: 16,
-        textAlign: 'center',
-        marginTop: 20,
-    },
-    jobCard: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 20,
-        marginBottom: 12,
-        borderRadius: 10,
-    },
-    logo: {
-        width: 60,
-        height: 60,
-        marginRight: 12,
-        borderRadius: 5,
-    },
-    jobInfo: {
-        flex: 1,
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    company: {
-        fontSize: 16,
-    },
-    workModel: {
-        fontSize: 14,
-    },
-    buttonsContainer: {
-        flexDirection: 'column',
-    },
-    removeButton: {
-        backgroundColor: '#dc3545',
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 5,
-        marginBottom: 5,
-    },
-    applyButton: {
-        backgroundColor: '#28a745',
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 5,
-    },
-    buttonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-    },
+    logo: { width: 50, height: 50, marginRight: 10, borderRadius: 5 },
+    logoPlaceholder: { width: 50, height: 50, marginRight: 10, borderRadius: 5, justifyContent: 'center', alignItems: 'center' },
+    jobInfo: { flex: 1 },
+    title: { fontSize: 18, fontWeight: 'bold' },
+    company: { fontSize: 14 },
+    buttons: { flexDirection: 'column' },
+    applyButton: { backgroundColor: '#28a745', paddingVertical: 5, paddingHorizontal: 10, borderRadius: 5, marginBottom: 5 },
+    removeButton: { backgroundColor: '#dc3545', paddingVertical: 5, paddingHorizontal: 10, borderRadius: 5 },
+    buttonText: { color: '#fff', fontWeight: 'bold' },
 });
 
 export default Savejobscreen;
