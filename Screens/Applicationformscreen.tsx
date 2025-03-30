@@ -6,13 +6,13 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../Navigator/Appnavigator';
 import { useTheme } from '../Context/Themecontext';
-import { Jobcontext } from '../Context/Jobcontext'; // Import the context managing saved jobs
+import { useJobcontext } from '../Context/Jobcontext'; // ✅ Corrected import
 
 const Applicationformscreen: React.FC = () => {
     const route = useRoute();
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const { isDarkMode } = useTheme();
-    const { savedJobs, setSavedJobs } = useContext(Jobcontext); // Get saved jobs and setter function
+    const { savedJobs, removeJob } = useJobcontext(); // ✅ Corrected hook usage
 
     const job = (route.params as { job?: any })?.job;
     const fromSavedJobs = (route.params as { fromSavedJobs?: boolean })?.fromSavedJobs || false;
@@ -30,24 +30,24 @@ const Applicationformscreen: React.FC = () => {
 
         // Remove the job from saved jobs if applying from Saved Jobs
         if (fromSavedJobs && job) {
-            setSavedJobs(savedJobs.filter(savedJob => savedJob.id !== job.id));
+            removeJob(job.id); // ✅ Use removeJob from context
         }
 
-        // Clear form fields first
+        // Clear form fields
         setName('');
         setEmail('');
         setContact('');
         setReason('');
 
-        // Show success alert with "OK" button that redirects properly
+        // Show success alert
         Alert.alert('Success', 'Your application has been submitted.', [
             { 
                 text: 'OK', 
                 onPress: () => {
                     if (fromSavedJobs) {
-                        navigation.navigate('HomeScreen'); // Redirect to Job Finder Screen
+                        navigation.navigate('Saved Jobs'); // Redirect to Saved Jobs
                     } else {
-                        navigation.goBack(); // Go back to the previous screen
+                        navigation.goBack();
                     }
                 }
             },

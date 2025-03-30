@@ -5,12 +5,12 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../Navigator/Appnavigator';
-import { useJobContext } from '../Context/Jobcontext';
+import { useJobcontext } from '../Context/Jobcontext';
 import { useTheme } from '../Context/Themecontext';
 
 const Savejobscreen: React.FC = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-    const { savedJobs, removeJob } = useJobContext(); // Added removeJob function
+    const { savedJobs, removeJob } = useJobcontext(); // Added removeJob function
     const { isDarkMode } = useTheme();
 
     return (

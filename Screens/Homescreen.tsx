@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { 
     View, Text, TextInput, FlatList, TouchableOpacity, Image, StyleSheet 
 } from 'react-native';
-import { useJobContext } from '../Context/Jobcontext';
+import { useJobcontext } from '../Context/Jobcontext';
 import { useTheme } from '../Context/Themecontext';
 import { Switch } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -10,7 +10,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../Navigator/Appnavigator';
 
 const Homescreen: React.FC = () => {
-    const { jobs, savedJobs, fetchJobs, saveJob } = useJobContext();
+    const { jobs, savedJobs, fetchJobs, saveJob } = useJobcontext();
     const { isDarkMode, toggleTheme } = useTheme();
     const [searchQuery, setSearchQuery] = useState('');
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
